@@ -50,8 +50,8 @@
       },
       updateSystemMessage: function() {
         const systemMessage = prompt('Enter your system message');
-        this.systemMessage.content = systemMessage;
-        localStorage.setItem('systemMessage', systemMessage);
+        this.systemMessage.content = `<p>${systemMessage}</p>`;
+        localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : systemMessage);
         this.messages[0] = this.systemMessage;
       },
       updateApiKey: function() {
@@ -65,6 +65,8 @@
         const systemMessage = localStorage.getItem('systemMessage');
         if (systemMessage) {
           this.systemMessage.content = systemMessage;
+        } else {
+          localStorage.setItem('systemMessage', `<p>${this.systemMessage.content}</p>`);
         }
 
         const apiKey = localStorage.getItem('apiKey');
