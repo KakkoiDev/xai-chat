@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xAI Chat</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
+      defer
+    ></script>
+  </head>
+  <body
+    x-data="{
+      isWaitingForResponse: false,
+      apiKey: '',
+      systemMessage: {
+          'role': 'system',
+          'content': '<p>You are a general purpose assisant.</p>'
+        },
+      messages: [],
+      message: '',
+      sendMessage: async function() {
+        this.messages.push({ role: 'user', content: `<p>${this.message}</p>` });
+        this.message = '';
+        this.isWaitingForResponse = true;
+
+        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.apiKey}`
+          },
+          body: JSON.stringify({
+            'messages': this.messages,
+            'model': 'grok-beta',
+            'stream': false,
+            'temperature': 0
+          })
+        });
+
+        const data = await response.json();
+        const content = marked.parse(data.choices[0].message.content);
+
+        this.messages.push({ role: data.choices[0].message.role, content: content });
+        this.isWaitingForResponse = false;
+      },
+      clearMessages: function() {
+        this.messages = [this.systemMessage];
+      },
+      updateApiKey: function() {
+        const apiKey = prompt('Enter your OpenAI, Anthropic or xAI API key');
+        if (apiKey) {
+          this.apiKey = apiKey;
+          localStorage.setItem('apiKey', apiKey);
+        }
+      },
+      init() {
+        this.messages.push(this.systemMessage);
+
+        const apiKey = localStorage.getItem('apiKey');
+        if (apiKey) {
+          this.apiKey = apiKey;
+        } else {
+            this.updateApiKey();
+        }
+      },
+    }"
+  >
+    <div style="position: fixed">
+      <input @keydown.enter="sendMessage" type="text" x-model="message" />
+      <button @click="sendMessage" :disabled="isWaitingForResponse">
+        SEND
+      </button>
+      <button @click="clearMessages" :disabled="isWaitingForResponse">
+        CLEAR CHAT
+      </button>
+      <button @click="updateApiKey" :disabled="isWaitingForResponse">
+        UPDATE API KEY
+      </button>
+    </div>
+    <div style="height: 40px"></div>
+    <template x-for="message in messages">
+      <div>
+        <div>
+          <b x-text="message.role"></b>
+        </div>
+        <div x-html="message.content"></div>
+        <hr />
+      </div>
+    </template>
+    <div x-show="isWaitingForResponse">
+      <p>Waiting for response...</p>
+    </div>
+  </body>
+</html>
