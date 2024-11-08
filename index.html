@@ -48,6 +48,12 @@
       clearMessages: function() {
         this.messages = [this.systemMessage];
       },
+      updateSystemMessage: function() {
+        const systemMessage = prompt('Enter your system message');
+        this.systemMessage.content = systemMessage;
+        localStorage.setItem('systemMessage', systemMessage);
+        this.messages[0] = this.systemMessage;
+      },
       updateApiKey: function() {
         const apiKey = prompt('Enter your OpenAI, Anthropic or xAI API key');
         if (apiKey) {
@@ -56,7 +62,10 @@
         }
       },
       init() {
-        this.messages.push(this.systemMessage);
+        const systemMessage = localStorage.getItem('systemMessage');
+        if (systemMessage) {
+          this.systemMessage.content = systemMessage;
+        }
 
         const apiKey = localStorage.getItem('apiKey');
         if (apiKey) {
@@ -64,6 +73,8 @@
         } else {
             this.updateApiKey();
         }
+
+        this.messages.push(this.systemMessage);
       },
     }"
   >
@@ -72,12 +83,9 @@
       <button @click="sendMessage" :disabled="isWaitingForResponse">
         SEND
       </button>
-      <button @click="clearMessages" :disabled="isWaitingForResponse">
-        CLEAR CHAT
-      </button>
-      <button @click="updateApiKey" :disabled="isWaitingForResponse">
-        UPDATE API KEY
-      </button>
+      <button @click="clearMessages">CLEAR CHAT</button>
+      <button @click="updateSystemMessage">UPDATE SYSTEM MESSAGE</button>
+      <button @click="updateApiKey">UPDATE API KEY</button>
     </div>
     <div style="height: 40px"></div>
     <template x-for="message in messages">
