@@ -44,15 +44,18 @@
 
         this.messages.push({ role: data.choices[0].message.role, content: content });
         this.isWaitingForResponse = false;
+        localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       clearMessages: function() {
         this.messages = [this.systemMessage];
+        localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       updateSystemMessage: function() {
         const systemMessage = prompt('Enter your system message');
         this.systemMessage.content = `<p>${systemMessage}</p>`;
-        localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : systemMessage);
+        localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : '');
         this.messages[0] = this.systemMessage;
+        localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       updateApiKey: function() {
         const apiKey = prompt('Enter your OpenAI, Anthropic or xAI API key');
@@ -66,7 +69,7 @@
         if (systemMessage) {
           this.systemMessage.content = systemMessage;
         } else {
-          localStorage.setItem('systemMessage', `<p>${this.systemMessage.content}</p>`);
+          localStorage.setItem('systemMessage', this.systemMessage.content);
         }
 
         const apiKey = localStorage.getItem('apiKey');
@@ -76,7 +79,13 @@
             this.updateApiKey();
         }
 
-        this.messages.push(this.systemMessage);
+        const messages = localStorage.getItem('messages');
+        if (messages) {
+          this.messages = JSON.parse(messages);
+          this.messages[0] = this.systemMessage;
+        } else {
+          this.messages.push(this.systemMessage);
+        }
       },
     }"
   >
