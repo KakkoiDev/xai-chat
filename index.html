@@ -9,6 +9,42 @@
       src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
       defer
     ></script>
+    <style>
+      body {
+        background-color: #1f1f1f;
+        color: #f0f0f0;
+      }
+
+      #input-container {
+        position: fixed;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #input {
+        flex-shrink: 0;
+      }
+
+      summary {
+        text-align: right;
+        cursor: pointer;
+      }
+
+      #chat-container {
+        margin-top: 40px;
+      }
+
+      pre {
+        background-color: #f0f0f0;
+        color: #1f1f1f;
+        padding: 8px;
+        border-radius: 8px;
+        overflow: auto;
+      }
+    </style>
   </head>
   <body
     x-data="{
@@ -89,27 +125,33 @@
       },
     }"
   >
-    <div style="position: fixed">
-      <input @keydown.enter="sendMessage" type="text" x-model="message" />
-      <button @click="sendMessage" :disabled="isWaitingForResponse">
-        SEND
-      </button>
-      <button @click="clearMessages">CLEAR CHAT</button>
-      <button @click="updateSystemMessage">UPDATE SYSTEM MESSAGE</button>
-      <button @click="updateApiKey">UPDATE API KEY</button>
-    </div>
-    <div style="height: 40px"></div>
-    <template x-for="message in messages">
-      <div>
-        <div>
-          <b x-text="message.role"></b>
-        </div>
-        <div x-html="message.content"></div>
-        <hr />
+    <div id="input-container">
+      <div id="input">
+        <input @keydown.enter="sendMessage" type="text" x-model="message" />
+        <button @click="sendMessage" :disabled="isWaitingForResponse">
+          SEND
+        </button>
       </div>
-    </template>
-    <div x-show="isWaitingForResponse">
-      <p>Waiting for response...</p>
+      <details>
+        <summary>Options</summary>
+        <button @click="clearMessages">CLEAR CHAT</button>
+        <button @click="updateSystemMessage">UPDATE SYSTEM MESSAGE</button>
+        <button @click="updateApiKey">UPDATE API KEY</button>
+      </details>
+    </div>
+    <div id="chat-container">
+      <template x-for="message in messages">
+        <div>
+          <div>
+            <b x-text="message.role"></b>
+          </div>
+          <div x-html="message.content"></div>
+          <hr />
+        </div>
+      </template>
+      <div x-show="isWaitingForResponse">
+        <p>Waiting for response...</p>
+      </div>
     </div>
   </body>
 </html>
