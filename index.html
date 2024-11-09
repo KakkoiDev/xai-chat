@@ -13,6 +13,7 @@
       body {
         background-color: #1f1f1f;
         color: #f0f0f0;
+        word-break: break-all;
       }
 
       #input-container {
@@ -26,6 +27,10 @@
 
       #input {
         flex-shrink: 0;
+      }
+
+      details {
+        background-color: #1f1f1f;
       }
 
       summary {
@@ -49,6 +54,7 @@
   <body
     x-data="{
       isWaitingForResponse: false,
+      isStreaming: true,
       apiKey: '',
       systemMessage: {
           'role': 'system',
@@ -70,15 +76,50 @@
           body: JSON.stringify({
             'messages': this.messages,
             'model': 'grok-beta',
-            'stream': false,
+            'stream': this.isStreaming,
             'temperature': 0
           })
         });
 
-        const data = await response.json();
-        const content = marked.parse(data.choices[0].message.content);
+        if (this.isStreaming) {
+          this.messages.push({role: 'assistant', content: ''});
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let content = '';
 
-        this.messages.push({ role: data.choices[0].message.role, content: content });
+          while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) break;
+
+            const chunk = decoder.decode(value, {stream: true});
+            const lines = chunk.split('\n\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+
+                if (data === '[DONE]') break;
+
+                const parsedData = JSON.parse(data);
+                const delta = parsedData.choices[0].delta;
+                const content = delta.content;
+
+                if (!content) continue;
+
+                this.messages[this.messages.length - 1].content += content;
+              }
+            }
+          }
+        }
+
+        if (!this.isStreaming) {
+          const data = await response.json();
+          const content = marked.parse(data.choices[0].message.content);
+
+          this.messages.push({ role: data.choices[0].message.role, content: content });
+        }
+
         this.isWaitingForResponse = false;
         localStorage.setItem('messages', JSON.stringify(this.messages));
       },
@@ -99,6 +140,10 @@
           this.apiKey = apiKey;
           localStorage.setItem('apiKey', apiKey);
         }
+      },
+      toggleIsStreaming: function() {
+        this.isStreaming = !this.isStreaming;
+        localStorage.setItem('isStreaming', this.isStreaming);
       },
       init() {
         const systemMessage = localStorage.getItem('systemMessage');
@@ -122,6 +167,11 @@
         } else {
           this.messages.push(this.systemMessage);
         }
+
+        const isStreaming = localStorage.getItem('isStreaming');
+        if (isStreaming) {
+          this.isStreaming = isStreaming === 'true';
+        }
       },
     }"
   >
@@ -137,6 +187,9 @@
         <button @click="clearMessages">CLEAR CHAT</button>
         <button @click="updateSystemMessage">UPDATE SYSTEM MESSAGE</button>
         <button @click="updateApiKey">UPDATE API KEY</button>
+        <button @click="toggleIsStreaming">
+          <span x-text="isStreaming ? '✔ STREAMING' : '️❌  STREAMING'"></span>
+        </button>
       </details>
     </div>
     <div id="chat-container">
@@ -149,7 +202,7 @@
           <hr />
         </div>
       </template>
-      <div x-show="isWaitingForResponse">
+      <div x-show="isWaitingForResponse && !isStreaming">
         <p>Waiting for response...</p>
       </div>
     </div>
