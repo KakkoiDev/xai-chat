@@ -156,7 +156,7 @@
         localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       updateApiKey: function() {
-        const apiKey = prompt('Enter your OpenAI, Anthropic or xAI API key');
+        const apiKey = prompt('Enter your xAI API key');
         if (apiKey) {
           this.apiKey = apiKey;
           localStorage.setItem('apiKey', apiKey);
