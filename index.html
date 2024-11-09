@@ -92,6 +92,11 @@
           })
         });
 
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+
         if (this.isStreaming) {
           this.messages.push({role: 'assistant', content: '', rawContent: ''});
           const reader = response.body.getReader();
