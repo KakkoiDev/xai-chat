@@ -82,7 +82,7 @@
         });
 
         if (this.isStreaming) {
-          this.messages.push({role: 'assistant', content: ''});
+          this.messages.push({role: 'assistant', content: '', rawContent: ''});
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
           let content = '';
@@ -103,11 +103,15 @@
 
                 const parsedData = JSON.parse(data);
                 const delta = parsedData.choices[0].delta;
-                const content = delta.content;
+                const newContent = delta.content;
 
-                if (!content) continue;
+                if (!newContent) continue;
 
-                this.messages[this.messages.length - 1].content += content;
+                const lastMessageIndex = this.messages.length - 1;
+                const rawContent = this.messages[lastMessageIndex].rawContent;
+                const updatedRawContent = rawContent + newContent;
+                this.messages[lastMessageIndex].content = marked.parse(updatedRawContent);
+                this.messages[lastMessageIndex].rawContent = updatedRawContent;
               }
             }
           }
