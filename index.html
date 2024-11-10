@@ -37,6 +37,18 @@
 
       details {
         background-color: #1f1f1f;
+        position: relative;
+      }
+
+      details > div {
+        padding: 4px;
+        position: absolute;
+        right: 0;
+        background-color: #1f1f1f;
+      }
+
+      details > div > div {
+        white-space: nowrap;
       }
 
       summary {
@@ -235,22 +247,24 @@
       </div>
       <details>
         <summary>Options</summary>
-        <button @click="clearMessages">🧹 CLEAR CHAT</button>
-        <button @click="updateSystemMessage">🤖 UPDATE SYSTEM MESSAGE</button>
-        <button @click="updateApiKey">🔑 UPDATE API KEY</button>
-        <button @click="toggleIsStreaming">
-          <span x-text="isStreaming ? '✔ STREAMING' : '️❌  STREAMING'"></span>
-        </button>
         <div>
-          <label for="temperature">🌡️ TEMPERATURE</label>
-          <input type="range" @change="updateTemperature($el.value)" :value="temperature" min="0" max="2" step="0.1">
-          <span x-text="temperature"></span>
-        </div>
-        <div>
-          <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
-        </div>
-        <div>
-          <span>v1.0.3</span>
+          <button @click="clearMessages">🧹 CLEAR CHAT</button>
+          <button @click="updateSystemMessage">🤖 UPDATE SYSTEM MESSAGE</button>
+          <button @click="updateApiKey">🔑 UPDATE API KEY</button>
+          <button @click="toggleIsStreaming">
+            <span x-text="isStreaming ? '✔ STREAMING' : '️❌  STREAMING'"></span>
+          </button>
+          <div>
+            <label for="temperature">🌡️ TEMPERATURE</label>
+            <input type="range" @change="updateTemperature($el.value)" :value="temperature" min="0" max="2" step="0.1">
+            <span x-text="temperature"></span>
+          </div>
+          <div>
+            <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
+          </div>
+          <div>
+            <span>v1.0.3</span>
+          </div>
         </div>
       </details>
     </div>
