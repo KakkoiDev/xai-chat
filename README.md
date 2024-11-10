@@ -14,6 +14,8 @@ If you don't have an API key, you can get one from the [xAI console](https://con
 
 If you would like to user a different API key, you can do so by clicking the Options > UPDATE API KEY button.
 
+⚠️ The API key and the chat history are stored in your browser's local storage.
+
 ## Features
 
 - Markdown support: Messages are rendered as markdown.
