@@ -28,3 +28,7 @@ If you would like to user a different API key, you can do so by clicking the Opt
 - Toggle streaming: The streaming (the feature that allows the chat to be streamed in real-time) can be toggled by clicking the STREAMING button.
 - Change temperature: Make the output more or less random by changing the temperature. 0 is the most deterministic, 2 is the most random.
 - Change max tokens: Change the maximum number of tokens in the response.
+- Change frequency penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.
+- Change presence penalty: Number between -2.0 and 2.0. Positive values penalize new tokens that are similar to tokens earlier in the text, decreasing the model's likelihood to repeat the same line verbatim.
+- Change top p: An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. It is generally recommended to alter this or `temperature` but not both.
+

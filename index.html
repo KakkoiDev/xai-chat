@@ -95,6 +95,9 @@
       showCost: true,
       temperature: 0,
       maxTokens: 4096,
+      frequencyPenalty: 0,
+      presencePenalty: 0,
+      topP: 1,
       apiKey: '',
       systemMessage: {
           'role': 'system',
@@ -121,7 +124,10 @@
             'model': 'grok-beta',
             'stream': this.isStreaming,
             'temperature': Number(this.temperature),
-            'max_tokens': Number(this.maxTokens)
+            'max_tokens': Number(this.maxTokens),
+            'frequency_penalty': Number(this.frequencyPenalty),
+            'presence_penalty': Number(this.presencePenalty),
+            'top_p': Number(this.topP)
           })
         });
 
@@ -238,6 +244,18 @@
         this.maxTokens = value;
         localStorage.setItem('maxTokens', this.maxTokens);
       },
+      updateFrequencyPenalty: function(value) {
+        this.frequencyPenalty = value;
+        localStorage.setItem('frequencyPenalty', this.frequencyPenalty);
+      },
+      updatePresencePenalty: function(value) {
+        this.presencePenalty = value;
+        localStorage.setItem('presencePenalty', this.presencePenalty);
+      },
+      updateTopP: function(value) {
+        this.topP = value;
+        localStorage.setItem('topP', this.topP);
+      },
       init() {
         const systemMessage = localStorage.getItem('systemMessage');
         if (systemMessage) {
@@ -280,6 +298,21 @@
           this.maxTokens = maxTokens;
         }
 
+        const frequencyPenalty = localStorage.getItem('frequencyPenalty');
+        if (frequencyPenalty) {
+          this.frequencyPenalty = frequencyPenalty;
+        }
+
+        const presencePenalty = localStorage.getItem('presencePenalty');
+        if (presencePenalty) {
+          this.presencePenalty = presencePenalty;
+        }
+
+        const topP = localStorage.getItem('topP');
+        if (topP) {
+          this.topP = topP;
+        }
+
         window.addEventListener('wheel', (event) => {
           if (event.deltaY < 0) {
             this.isAutoScroll = false;
@@ -318,10 +351,25 @@
             <span x-text="maxTokens"></span>
           </div>
           <div>
+            <label for="frequencyPenalty">🦜 FREQUENCY PENALTY</label>
+            <input type="range" @change="updateFrequencyPenalty($el.value)" :value="frequencyPenalty" min="-2" max="2" step="0.1">
+            <span x-text="frequencyPenalty"></span>
+          </div>
+          <div>
+            <label for="presencePenalty">🆕 PRESENCE PENALTY</label>
+            <input type="range" @change="updatePresencePenalty($el.value)" :value="presencePenalty" min="-2" max="2" step="0.1">
+            <span x-text="presencePenalty"></span>
+          </div>
+          <div>
+            <label for="topP">⚛️ TOP P</label>
+            <input type="range" @change="updateTopP($el.value)" :value="topP" min="0" max="1" step="0.1">
+            <span x-text="topP"></span>
+          </div>
+          <div>
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.1.2</span>
+            <span>v1.2.0</span>
           </div>
         </div>
       </details>
