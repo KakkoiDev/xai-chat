@@ -331,7 +331,7 @@
         <div>
           <div class="chat-message-header">
             <b x-text="message.role"></b>
-            <span class="chat-message-cost" x-show="showCost" x-text="`${message.role === 'system' ? 'conversation total cost: ' : ''} $${message?.cost?.toFixed(6)}`"></span>
+            <span class="chat-message-cost" x-show="showCost && message.cost" x-text="`${message.role === 'system' ? 'conversation total cost: ' : ''} $${message?.cost?.toFixed(6)}`"></span>
           </div>
           <div x-html="message.content"></div>
           <hr />
