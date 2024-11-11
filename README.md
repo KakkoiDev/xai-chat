@@ -27,3 +27,4 @@ If you would like to user a different API key, you can do so by clicking the Opt
 - Update API key: The API key can be updated by clicking the UPDATE API KEY button.
 - Toggle streaming: The streaming (the feature that allows the chat to be streamed in real-time) can be toggled by clicking the STREAMING button.
 - Change temperature: Make the output more or less random by changing the temperature. 0 is the most deterministic, 2 is the most random.
+- Change max tokens: Change the maximum number of tokens in the response.

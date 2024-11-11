@@ -94,6 +94,7 @@
       isStreaming: true,
       showCost: true,
       temperature: 0,
+      maxTokens: 4096,
       apiKey: '',
       systemMessage: {
           'role': 'system',
@@ -119,7 +120,8 @@
             'messages': this.messages,
             'model': 'grok-beta',
             'stream': this.isStreaming,
-            'temperature': Number(this.temperature)
+            'temperature': Number(this.temperature),
+            'max_tokens': Number(this.maxTokens)
           })
         });
 
@@ -232,6 +234,10 @@
         this.temperature = value;
         localStorage.setItem('temperature', this.temperature);
       },
+      updateMaxTokens: function(value) {
+        this.maxTokens = value;
+        localStorage.setItem('maxTokens', this.maxTokens);
+      },
       init() {
         const systemMessage = localStorage.getItem('systemMessage');
         if (systemMessage) {
@@ -269,6 +275,11 @@
           this.temperature = temperature;
         }
 
+        const maxTokens = localStorage.getItem('maxTokens');
+        if (maxTokens) {
+          this.maxTokens = maxTokens;
+        }
+
         window.addEventListener('wheel', (event) => {
           if (event.deltaY < 0) {
             this.isAutoScroll = false;
@@ -302,6 +313,11 @@
             <span x-text="temperature"></span>
           </div>
           <div>
+            <label for="maxTokens">🪙 MAX TOKENS</label>
+            <input type="range" @change="updateMaxTokens($el.value)" :value="maxTokens" min="0" max="4096" step="1">
+            <span x-text="maxTokens"></span>
+          </div>
+          <div>
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
@@ -315,7 +331,7 @@
         <div>
           <div class="chat-message-header">
             <b x-text="message.role"></b>
-            <span class="chat-message-cost" x-show="showCost" x-text="`${message.role === 'system' ? 'conversation total cost: ' : ''} $${message.cost.toFixed(6)}`"></span>
+            <span class="chat-message-cost" x-show="showCost" x-text="`${message.role === 'system' ? 'conversation total cost: ' : ''} $${message?.cost?.toFixed(6)}`"></span>
           </div>
           <div x-html="message.content"></div>
           <hr />
