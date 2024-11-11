@@ -180,6 +180,9 @@
       },
       updateSystemMessage: function() {
         const systemMessage = prompt('Enter your system message');
+
+        if (!systemMessage) return;
+
         this.systemMessage.content = `<p>${systemMessage}</p>`;
         localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : '');
         this.messages[0] = this.systemMessage;
@@ -187,10 +190,11 @@
       },
       updateApiKey: function() {
         const apiKey = prompt('Enter your xAI API key');
-        if (apiKey) {
-          this.apiKey = apiKey;
-          localStorage.setItem('apiKey', apiKey);
-        }
+
+        if (!apiKey) return;
+
+        this.apiKey = apiKey;
+        localStorage.setItem('apiKey', apiKey);
       },
       toggleIsStreaming: function() {
         this.isStreaming = !this.isStreaming;
