@@ -59,6 +59,15 @@
         margin-top: 40px;
       }
 
+      .chat-message-header {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .chat-message-cost {
+        font-size: 0.8em;
+      }
+
       pre {
         background-color: #c0c0c0;
         color: #1f1f1f;
@@ -136,6 +145,8 @@
                 const parsedData = JSON.parse(data);
                 const delta = parsedData.choices[0].delta;
                 const newContent = delta.content;
+                const inputTokens = parsedData?.usage?.prompt_tokens;
+                const outputTokens = parsedData?.usage?.completion_tokens;
 
                 if (!newContent) continue;
 
@@ -144,6 +155,7 @@
                 const updatedRawContent = rawContent + newContent;
                 this.messages[lastMessageIndex].content = marked.parse(updatedRawContent);
                 this.messages[lastMessageIndex].rawContent = updatedRawContent;
+                this.messages[lastMessageIndex].cost = this.calculateCost({inputTokens, outputTokens});
 
                 if (this.isAutoScroll) {
                   setTimeout(this.scrollToBottom, 100);
@@ -155,9 +167,11 @@
 
         if (!this.isStreaming) {
           const data = await response.json();
+          const inputTokens = data?.usage?.prompt_tokens;
+          const outputTokens = data?.usage?.completion_tokens;
           const content = marked.parse(data.choices[0].message.content);
 
-          this.messages.push({ role: data.choices[0].message.role, content: content });
+          this.messages.push({ role: data.choices[0].message.role, content: content, cost: this.calculateCost({inputTokens, outputTokens}) });
 
           if (this.isAutoScroll) {
             setTimeout(this.scrollToBottom, 100);
@@ -166,7 +180,16 @@
 
         this.isWaitingForResponse = false;
         this.messages[this.messages.length - 1].rawContent = null;
+        this.messages[0].cost = this.messages.slice(1).reduce((acc, message) => acc + (message.cost ?? 0), 0);
         localStorage.setItem('messages', JSON.stringify(this.messages));
+      },
+      calculateCost: function({inputTokens, outputTokens}) {
+        if (!inputTokens || !outputTokens) return 0;
+
+        const inputTokenPrice = 5 / 1000000;
+        const outputTokenPrice = 15 / 1000000;
+
+        return (inputTokens * inputTokenPrice) + (outputTokens * outputTokenPrice);
       },
       scrollToBottom: function() {
         window.scrollTo({
@@ -222,7 +245,6 @@
         const messages = localStorage.getItem('messages');
         if (messages) {
           this.messages = JSON.parse(messages);
-          this.messages[0] = this.systemMessage;
         } else {
           this.messages.push(this.systemMessage);
         }
@@ -270,7 +292,7 @@
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.0.4</span>
+            <span>v1.1.0</span>
           </div>
         </div>
       </details>
@@ -278,8 +300,9 @@
     <div id="chat-container">
       <template x-for="message in messages">
         <div>
-          <div>
+          <div class="chat-message-header">
             <b x-text="message.role"></b>
+            <span class="chat-message-cost" x-text="`$${message.cost.toFixed(6)}`"></span>
           </div>
           <div x-html="message.content"></div>
           <hr />

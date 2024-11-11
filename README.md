@@ -19,8 +19,9 @@ If you would like to user a different API key, you can do so by clicking the Opt
 ## Features
 
 - Markdown support: Messages are rendered as markdown.
-- Auto-scroll to bottom: The chat will automatically scroll to the bottom when a new message is received.
+- Cost display: The cost of each message is displayed.
 - Auto-save: The chat is auto-saved to local storage, so you can come back to it later.
+- Auto-scroll to bottom: The chat will automatically scroll to the bottom when a new message is received.
 - Clear chat: The chat can be cleared by clicking the CLEAR CHAT button.
 - Update system message: The system message (the message that is sent to the API to set the behavior of the chat) can be updated by clicking the UPDATE SYSTEM MESSAGE button.
 - Update API key: The API key can be updated by clicking the UPDATE API KEY button.
