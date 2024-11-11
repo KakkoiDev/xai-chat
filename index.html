@@ -92,6 +92,7 @@
     x-data="{
       isWaitingForResponse: false,
       isStreaming: true,
+      showCost: true,
       temperature: 0,
       apiKey: '',
       systemMessage: {
@@ -219,6 +220,10 @@
         this.apiKey = apiKey;
         localStorage.setItem('apiKey', apiKey);
       },
+      toggleShowCost: function() {
+        this.showCost = !this.showCost;
+        localStorage.setItem('showCost', this.showCost);
+      },
       toggleIsStreaming: function() {
         this.isStreaming = !this.isStreaming;
         localStorage.setItem('isStreaming', this.isStreaming);
@@ -247,6 +252,11 @@
           this.messages = JSON.parse(messages);
         } else {
           this.messages.push(this.systemMessage);
+        }
+
+        const showCost = localStorage.getItem('showCost');
+        if (showCost) {
+          this.showCost = showCost === 'true';
         }
 
         const isStreaming = localStorage.getItem('isStreaming');
@@ -283,6 +293,9 @@
           <button @click="toggleIsStreaming">
             <span x-text="isStreaming ? '✔ STREAMING' : '️❌  STREAMING'"></span>
           </button>
+          <button @click="toggleShowCost">
+            <span x-text="showCost ? '✔ SHOW COST' : '❌ SHOW COST'"></span>
+          </button>
           <div>
             <label for="temperature">🌡️ TEMPERATURE</label>
             <input type="range" @change="updateTemperature($el.value)" :value="temperature" min="0" max="2" step="0.1">
@@ -292,7 +305,7 @@
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.1.0</span>
+            <span>v1.1.1</span>
           </div>
         </div>
       </details>
@@ -302,7 +315,7 @@
         <div>
           <div class="chat-message-header">
             <b x-text="message.role"></b>
-            <span class="chat-message-cost" x-text="`$${message.cost.toFixed(6)}`"></span>
+            <span class="chat-message-cost" x-show="showCost" x-text="`$${message.cost.toFixed(6)}`"></span>
           </div>
           <div x-html="message.content"></div>
           <hr />
