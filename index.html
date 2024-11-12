@@ -64,7 +64,7 @@
         justify-content: space-between;
       }
 
-      .chat-message-cost {
+      .chat-message-metadata {
         font-size: 0.8em;
       }
 
@@ -93,6 +93,7 @@
       isWaitingForResponse: false,
       isStreaming: true,
       showCost: true,
+      showTokens: true,
       temperature: 0,
       maxTokens: 4096,
       frequencyPenalty: 0,
@@ -101,13 +102,16 @@
       apiKey: '',
       systemMessage: {
           'role': 'system',
-          'content': '<p>You are a general purpose assistant.</p>'
+          'content': 'You are a general purpose assistant.',
+          'cost': 0,
+          'tokens': 0
         },
       messages: [],
       message: '',
       isAutoScroll: true,
       sendMessage: async function() {
-        this.messages.push({ role: 'user', content: `<p>${this.message}</p>` });
+        const newMessage = marked.parse(this.message);
+        this.messages.push({ role: 'user', content: newMessage });
         this.message = '';
         this.isWaitingForResponse = true;
         this.isAutoScroll = true;
@@ -165,6 +169,7 @@
                 this.messages[lastMessageIndex].content = marked.parse(updatedRawContent);
                 this.messages[lastMessageIndex].rawContent = updatedRawContent;
                 this.messages[lastMessageIndex].cost = this.calculateCost({inputTokens, outputTokens});
+                this.messages[lastMessageIndex].tokens = inputTokens + outputTokens;
 
                 if (this.isAutoScroll) {
                   setTimeout(this.scrollToBottom, 100);
@@ -180,7 +185,7 @@
           const outputTokens = data?.usage?.completion_tokens;
           const content = marked.parse(data.choices[0].message.content);
 
-          this.messages.push({ role: data.choices[0].message.role, content: content, cost: this.calculateCost({inputTokens, outputTokens}) });
+          this.messages.push({ role: data.choices[0].message.role, content: content, cost: this.calculateCost({inputTokens, outputTokens}), tokens: inputTokens + outputTokens });
 
           if (this.isAutoScroll) {
             setTimeout(this.scrollToBottom, 100);
@@ -190,6 +195,7 @@
         this.isWaitingForResponse = false;
         this.messages[this.messages.length - 1].rawContent = null;
         this.messages[0].cost = this.messages.slice(1).reduce((acc, message) => acc + (message.cost ?? 0), 0);
+        this.messages[0].tokens = this.messages.slice(1).reduce((acc, message) => acc + (message.tokens ?? 0), 0);
         localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       calculateCost: function({inputTokens, outputTokens}) {
@@ -207,7 +213,7 @@
         });
       },
       clearMessages: function() {
-        this.messages = [{...this.systemMessage, cost: 0}];
+        this.messages = [{...this.systemMessage, cost: 0, tokens: 0}];
         localStorage.setItem('messages', JSON.stringify(this.messages));
       },
       updateSystemMessage: function() {
@@ -215,7 +221,7 @@
 
         if (!systemMessage) return;
 
-        this.systemMessage.content = `<p>${systemMessage}</p>`;
+        this.systemMessage.content = marked.parse(systemMessage);
         localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : '');
         this.messages[0] = {...this.messages[0], ...this.systemMessage};
         localStorage.setItem('messages', JSON.stringify(this.messages));
@@ -227,6 +233,10 @@
 
         this.apiKey = apiKey;
         localStorage.setItem('apiKey', apiKey);
+      },
+      toggleShowTokens: function() {
+        this.showTokens = !this.showTokens;
+        localStorage.setItem('showTokens', this.showTokens);
       },
       toggleShowCost: function() {
         this.showCost = !this.showCost;
@@ -275,12 +285,17 @@
         if (messages) {
           this.messages = JSON.parse(messages);
         } else {
-          this.messages.push({...this.systemMessage, cost: 0});
+          this.messages.push({...this.systemMessage, cost: 0, tokens: 0});
         }
 
         const showCost = localStorage.getItem('showCost');
         if (showCost) {
           this.showCost = showCost === 'true';
+        }
+
+        const showTokens = localStorage.getItem('showTokens');
+        if (showTokens) {
+          this.showTokens = showTokens === 'true';
         }
 
         const isStreaming = localStorage.getItem('isStreaming');
@@ -337,6 +352,9 @@
           <button @click="toggleIsStreaming">
             <span x-text="isStreaming ? '✔ STREAMING' : '️❌  STREAMING'"></span>
           </button>
+          <button @click="toggleShowTokens">
+            <span x-text="showTokens ? '✔ SHOW TOKENS' : '❌ SHOW TOKENS'"></span>
+          </button>
           <button @click="toggleShowCost">
             <span x-text="showCost ? '✔ SHOW COST' : '❌ SHOW COST'"></span>
           </button>
@@ -369,7 +387,7 @@
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.2.0</span>
+            <span>v1.3.0</span>
           </div>
         </div>
       </details>
@@ -379,7 +397,12 @@
         <div>
           <div class="chat-message-header">
             <b x-text="message.role"></b>
-            <span class="chat-message-cost" x-show="showCost && message.cost" x-text="`${message.role === 'system' ? 'conversation total cost: ' : ''} $${message?.cost?.toFixed(6)}`"></span>
+            <div class="chat-message-metadata">
+              <span x-show="message.role === 'system' && (showTokens || showCost)">conversation total: </span>
+              <span x-show="showTokens && message.tokens !== undefined" x-text="`₮${message?.tokens}`"></span>
+              <span x-show="showTokens && showCost && message.tokens !== undefined && message.cost !== undefined">|</span>
+              <span x-show="showCost && message.cost !== undefined" x-text="`$${message?.cost?.toFixed(6)}`"></span>
+            </div>
           </div>
           <div x-html="message.content"></div>
           <hr />
