@@ -34,6 +34,14 @@
         flex-shrink: 0;
       }
 
+      #input > div {
+        padding: 2px 4px;
+        background-color: #f0f0f0;
+        color: #1f1f1f;
+        display: inline-block;
+        min-width: 156px;
+      }
+
       details {
         background-color: #1f1f1f;
         position: relative;
@@ -110,7 +118,9 @@
       message: '',
       isAutoScroll: true,
       sendMessage: async function() {
-        const newMessage = marked.parse(this.message);
+        if (!this.message) return;
+
+        const newMessage = marked.parse(this.message, {breaks: true});
         this.messages.push({ role: 'user', content: newMessage });
         this.message = '';
         this.isWaitingForResponse = true;
@@ -221,7 +231,7 @@
 
         if (!systemMessage) return;
 
-        this.systemMessage.content = marked.parse(systemMessage);
+        this.systemMessage.content = marked.parse(systemMessage, {breaks: true});
         localStorage.setItem('systemMessage', systemMessage ? this.systemMessage.content : '');
         this.messages[0] = {...this.messages[0], ...this.systemMessage};
         localStorage.setItem('messages', JSON.stringify(this.messages));
@@ -338,8 +348,22 @@
   >
     <div id="input-container">
       <div id="input">
-        <input @keydown.enter="sendMessage" type="text" x-model="message" />
-        <button @click="sendMessage" :disabled="isWaitingForResponse">
+        <div
+          x-ref="input"
+          contentEditable="true"
+          @keydown.enter="
+            if (!event.shiftKey) {
+              event.preventDefault();
+              if (!isWaitingForResponse) {
+                message = $el.innerText;
+                $el.innerText = '';
+                sendMessage();
+              }
+            }
+          "
+          @blur="message = $el.innerText"
+        ></div>
+        <button @click="$refs.input.innerText = ''; $refs.input.focus(); sendMessage()" :disabled="isWaitingForResponse">
           SEND
         </button>
       </div>
@@ -387,7 +411,7 @@
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.3.0</span>
+            <span>v1.4.0</span>
           </div>
         </div>
       </details>

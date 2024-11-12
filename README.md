@@ -1,6 +1,6 @@
 # xAI Chat
 
-A simple chat interface for xAI's API.
+A simple chat interface for [xAI's API](https://x.ai/api).
 
 ![demo](./demo.gif)
 
@@ -39,11 +39,11 @@ If you would like to user a different API key, you can do so by clicking the Opt
 - [ ] Add a button to download the chat history as a markdown file
 - [ ] Add a button to upload a markdown file to continue the chat
 - [ ] Abort request
-- [ ] Use marked to format user and system messages (make new line with only 1 `\n`)
-- [ ] make input a div with `contenteditable` attribute with [Ctrl+Shift] to create a new line
+- [x] Use marked to format user and system messages (make new line with only 1 `\n`)
+- [x] make input a div with `contenteditable` attribute with [Ctrl+Shift] to create a new line
 - [ ] add simple project bundler
 - [x] show token usage
-- [ ] refactor `x-date`
+- [ ] refactor `x-data`
 - [ ] add demo gif for each feature
 - [ ] add a stack section
 - [ ] add resources section
