@@ -4,6 +4,8 @@ A simple chat interface for [xAI's API](https://x.ai/api).
 
 ![demo](./demo.gif)
 
+xAI's Grok chat UI is not yet available in my region, so I made this simple chat interface. It's also the occassion for me to have an hands-on experience with AI chats. To get to know more about how it works, how to tweak it, how to tailor it to my needs, etc.
+
 ## Usage
 
 1. Go to [kakkoidev.github.io/xai-chat](https://kakkoidev.github.io/xai-chat)
@@ -18,6 +20,7 @@ If you would like to user a different API key, you can do so by clicking the Opt
 
 ## Features
 
+- Single file application with no build step. This is a simple `index.html` file that can be dropped anywhere and "just work". And will still be working in the years to come. Ex: on a CND, ran locally with a static file server...
 - Markdown support: Messages are rendered as markdown.
 - Auto-save: The chat is auto-saved to local storage, so you can come back to it later.
 - Auto-scroll to bottom: The chat will automatically scroll to the bottom when a new message is received.
@@ -46,4 +49,16 @@ If you would like to user a different API key, you can do so by clicking the Opt
 - [ ] add resources section
 - [x] handle fetch error
 - [ ] when changing the value of a slider, the value should be updated immediately
+- [ ] add auto-scroll toggle button
+- [ ] add a conversations menu to select a conversation to load, conversation menu displays as a sidebar and can edit tile and delete conversations
+- [ ] add reflections section in readme where talk about pricing, starting new conversations regularly to reduce token carry-over cost (show workflow gif), take the time to understand the AI's answer line by line, expectations (similar to Claude Sonnet 3.5), default parameters are great for software engineering (concise and repeatable, deterministic) -- maybe playing with the parameters would be advised to get something for creative (poetry...) or more human-like (chat app, psychological help, debate...), I'm starting to think that the system prompt is very important in the quality of the output (hidden in commercial apps, interesting topic to explore!), the AI won't "do the code for you" - it is often wrong in its assumptions- approach to the problem and needs to be "cohearsed" into giving you the right answer - understanding what you are is essential and thinking at a higher level of abstraction will yield better results - the AI output a lot of content but the finer thinking depends on you, if you have a network error - just try again by prompting the AI with the word "again" or "retry" lketc.
+- [ ] add ideas section in readme: text-to-speech, speech-to-text, image recognition, image generation, desktop app, run local models, fine tune models, train new models, etc.
+- [ ] Known bugs section in readme: on mobile scrolling up doesn't stop the auto-scroll (just turn off auto-scroll in the options)
+- [ ] add a "notes" sidebar that opens on the side of the chat
+- [ ] rename "options" to "menu" and organize it in sections: Setup, Tools, Options, Info
+- [ ] auto-save the input text
+- [ ] remove text formatting in the input area
+- [ ] add a button to get human help! It will automatically prepare a message to ask help summarizing the conversation in order to post it on a forum, a chat, etc.
+- [ ] add history of all api calls, with date, tokens, cost, status, feature of the app that made the call...
+- [ ] add section in readme "How does it work?": what is a system prompt, a user, an assistant, a token output/input, calculate cost, etc...
 
