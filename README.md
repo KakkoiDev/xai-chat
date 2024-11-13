@@ -35,9 +35,6 @@ If you would like to user a different API key, you can do so by clicking the Opt
 
 ## Todo
 
-- [ ] Add a button to copy the chat history to clipboard
-- [ ] Add a button to download the chat history as a markdown file
-- [ ] Add a button to upload a markdown file to continue the chat
 - [ ] Abort request
 - [x] Use marked to format user and system messages (make new line with only 1 `\n`)
 - [x] make input a div with `contenteditable` attribute with [Ctrl+Shift] to create a new line
@@ -47,4 +44,6 @@ If you would like to user a different API key, you can do so by clicking the Opt
 - [ ] add demo gif for each feature
 - [ ] add a stack section
 - [ ] add resources section
+- [x] handle fetch error
+- [ ] when changing the value of a slider, the value should be updated immediately
 
