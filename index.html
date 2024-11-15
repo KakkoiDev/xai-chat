@@ -55,10 +55,22 @@
         position: absolute;
         right: 0;
         background-color: #1f1f1f;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
 
       details > div > div {
         white-space: nowrap;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      details a {
+        background-color: #c0c0c0;
+        padding: 2px 4px;
+        border-radius: 4px;
+        text-decoration: none;
       }
 
       summary {
@@ -415,10 +427,13 @@
             <span x-text="topP"></span>
           </div>
           <div>
+            <a href="https://console.x.ai/" target="_blank">✖️ xAI Console</a>
+          </div>
+          <div>
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.4.4</span>
+            <span>v1.4.5</span>
           </div>
         </div>
       </details>
