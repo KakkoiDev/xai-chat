@@ -117,6 +117,7 @@
       isStreaming: true,
       showCost: true,
       showTokens: true,
+      isAutoScrollEnabled: true,
       temperature: 0,
       maxTokens: 4096,
       frequencyPenalty: 0,
@@ -139,8 +140,8 @@
         this.messages.push({ role: 'user', content: newMessage });
         this.message = '';
         this.isWaitingForResponse = true;
-        this.isAutoScroll = true;
-        setTimeout(this.scrollToBottom, 100);
+        this.isAutoScroll = this.isAutoScrollEnabled;
+        this.isAutoScrollEnabled && setTimeout(this.scrollToBottom, 100);
 
         try {
           const response = await fetch('https://api.x.ai/v1/chat/completions', {
@@ -271,6 +272,10 @@
         this.showCost = !this.showCost;
         localStorage.setItem('showCost', this.showCost);
       },
+      toggleIsAutoScrollEnabled: function() {
+        this.isAutoScrollEnabled = !this.isAutoScrollEnabled;
+        localStorage.setItem('isAutoScrollEnabled', this.isAutoScrollEnabled);
+      },
       toggleIsStreaming: function() {
         this.isStreaming = !this.isStreaming;
         localStorage.setItem('isStreaming', this.isStreaming);
@@ -320,6 +325,11 @@
         const showCost = localStorage.getItem('showCost');
         if (showCost) {
           this.showCost = showCost === 'true';
+        }
+
+        const isAutoScrollEnabled = localStorage.getItem('isAutoScrollEnabled');
+        if (isAutoScrollEnabled) {
+          this.isAutoScrollEnabled = isAutoScrollEnabled === 'true';
         }
 
         const showTokens = localStorage.getItem('showTokens');
@@ -401,6 +411,9 @@
           <button @click="toggleShowCost">
             <span x-text="showCost ? '✔ SHOW COST' : '❌ SHOW COST'"></span>
           </button>
+          <button @click="toggleIsAutoScrollEnabled">
+            <span x-text="isAutoScrollEnabled ? '✔ AUTO SCROLL' : '❌ AUTO SCROLL'"></span>
+          </button>
           <div>
             <label for="temperature">🌡️ TEMPERATURE</label>
             <input type="range" @change="updateTemperature($el.value)" :value="temperature" min="0" max="2" step="0.1">
@@ -433,7 +446,7 @@
             <a href="https://github.com/kakkoidev/xai-chat" target="_blank">🐈‍⬛ GitHub</a>
           </div>
           <div>
-            <span>v1.4.5</span>
+            <span>v1.4.6</span>
           </div>
         </div>
       </details>
